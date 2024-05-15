@@ -1,6 +1,12 @@
-import { Routes } from '@angular/router';
+import { Route } from '@angular/router';
+import { BungieService } from './service/bungie-service.service';
 import { HomeComponent } from './view/home/home.component';
-
-export const routes: Routes = [
-    { path: '', component:  HomeComponent},
+export const routes: Route[] = [
+    {
+        path: '',
+        providers: [
+            BungieService,
+        ],
+        component:  HomeComponent,
+    },
 ];
