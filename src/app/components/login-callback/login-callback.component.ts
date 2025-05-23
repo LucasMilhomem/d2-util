@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BungieApiService } from '../../services/bungie-api.service';
 
 @Component({
@@ -12,12 +12,13 @@ export class LoginCallbackComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private bungieApiService: BungieApiService,
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       const code = params['code'];
-      //console.log('Authorization Code:', code);
+      console.log('Authorization Code:', code);
       this.bungieApiService.exchangeCodeForToken(code).subscribe({
           next: (response: any) => {
             const expiresIn = response.expires_in;
@@ -29,6 +30,8 @@ export class LoginCallbackComponent implements OnInit {
             };
 
             localStorage.setItem('auth', JSON.stringify(tokenData));
+
+            this.router.navigate(['/build-viewer']);
           },
           error: (err) => {
             console.error('Erro ao trocar o código por token:', err);

@@ -8,6 +8,7 @@ export const environment = {
   bungie_redirect_uri: "https://localhost:4200/auth/callback",
   bungie_token_url: "https://www.bungie.net/Platform/App/OAuth/Token/",
   bungie_authorize_url: "https://www.bungie.net/pt-br/OAuth/Authorize",
+  bungie_membership_url: "https://www.bungie.net/Platform/User/GetMembershipsForCurrentUser/",
   bungie_api_key: "fbe3e87095ec4deaaa3893fdb89ed0c3",
 };
 

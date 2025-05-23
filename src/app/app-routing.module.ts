@@ -2,10 +2,13 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginCallbackComponent } from './components/login-callback/login-callback.component';
 import { HomeComponent } from './components/home/home.component';
+import { BuildViewerComponent } from './components/build-viewer/build-viewer.component';
+import { AuthGuard } from './auth.guard';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'auth/callback', component: LoginCallbackComponent}
+  { path: 'build-viewer', component: BuildViewerComponent , canActivate: [AuthGuard]},
+  { path: 'auth/callback', component: LoginCallbackComponent},
 ];
 
 @NgModule({

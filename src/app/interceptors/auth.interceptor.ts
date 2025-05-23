@@ -7,20 +7,20 @@ import {
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { AuthService } from '../services/auth.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  constructor() {}
+  constructor(
+    private authService: AuthService,
+  ) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    const stored = localStorage.getItem('auth');
-    const tokenData = stored ? JSON.parse(stored) : null;
-
-    if (tokenData && tokenData.access_token && Date.now() < tokenData.expires_at) {
+    if (this.authService.isLoggedIn()) {
       const cloned = request.clone({
         setHeaders: {
-          Authorization: `Bearer ${tokenData.access_token}`,
+          Authorization: `Bearer ${this.authService.getToken()}`,
           'X-API-Key': environment.bungie_api_key,
         }
       });

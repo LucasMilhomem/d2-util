@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { LoginCallbackComponent } from './components/login-callback/login-callback.component';
-import { BungieApiService } from './services/bungie-api.service';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { BuildViewerModule } from './components/build-viewer/build-viewer.module';
 import { HomeComponent } from './components/home/home.component';
-import { BuildViewerComponent } from './components/build-viewer/build-viewer.component';
+import { LoginCallbackComponent } from './components/login-callback/login-callback.component';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { BungieApiService } from './services/bungie-api.service';
 
 
 @NgModule({
@@ -17,13 +17,13 @@ import { BuildViewerComponent } from './components/build-viewer/build-viewer.com
     AppComponent,
     HomeComponent,
     LoginCallbackComponent,
-    BuildViewerComponent,
   ],
   imports: [
     HttpClientModule,
     BrowserModule,
     AppRoutingModule,
-    NgbModule
+    NgbModule,
+    BuildViewerModule,
   ],
   providers: [
     BungieApiService,
