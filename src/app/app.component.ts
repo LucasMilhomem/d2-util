@@ -1,12 +1,18 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { BungieApiService } from './services/bungie-api.service';
+
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  title = 'd2-util';
+export class AppComponent implements OnInit{
+
+  constructor(
+    private bungieApiService : BungieApiService,
+  ){}
+
+  ngOnInit(): void {
+    //this.bungieApiService.login();
+  }
 }
