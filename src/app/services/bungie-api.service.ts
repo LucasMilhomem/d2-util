@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
@@ -12,11 +13,10 @@ export interface IMembership {
   providedIn: 'root'
 })
 export class BungieApiService {
-
-  private membership: IMembership | null = null;
-
+  
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router,
   ) { }
 
   login() {
@@ -42,7 +42,9 @@ export class BungieApiService {
 
   logout(): void {
     localStorage.removeItem('auth');
-    // redirect maybe
+    localStorage.removeItem('membership');
+    
+    this.router.navigate(['/home']);
   }
 
   exchangeCodeForToken(code: string) {
@@ -79,10 +81,20 @@ export class BungieApiService {
 
   getMembership() {
     return new Observable<IMembership | null>(observer => {
-      if (this.membership) {
-        observer.next(this.membership);
+      // check if there is a membership in localStorage
+      const membershipRaw = localStorage.getItem('membership');
+      if (membershipRaw) {
+        const membershipData = JSON.parse(membershipRaw);
+        // check validity
+        if (Date.now() < membershipData.expires_at) {
+          observer.next(membershipData);
+          return;
+        } else {
+          localStorage.removeItem('membership');
+        }
       }
 
+      // if there is no membership in localStorage, get it from the API
       this.http.get(environment.bungie_membership_url)
         .subscribe((res: any) => {
           const primaryId = res?.Response?.primaryMembershipId;
@@ -94,12 +106,21 @@ export class BungieApiService {
             const membershipType = destinyMembership.membershipType;
             const membershipId = destinyMembership.membershipId;
 
-            this.membership  = {
+            const membershipData = {
               membershipType: membershipType,
-              membershipId: membershipId
+              membershipId: membershipId,
+              expires_at: '',
             };
+
+            // saves the membership data in localStorage with the same expiration time as the token
+            const tokenRaw = localStorage.getItem('auth');
+            if (tokenRaw) {
+              const tokenData = JSON.parse(tokenRaw);
+              membershipData['expires_at'] = tokenData.expires_at;
+              localStorage.setItem('membership', JSON.stringify(membershipData));
+            }
             
-            observer.next(this.membership);
+            observer.next(membershipData);
           } else {
             observer.error('Não foi possível obter o membership do jogador.');
           }
