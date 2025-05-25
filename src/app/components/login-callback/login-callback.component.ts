@@ -18,25 +18,15 @@ export class LoginCallbackComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       const code = params['code'];
-      console.log('Authorization Code:', code);
       this.bungieApiService.exchangeCodeForToken(code).subscribe({
-          next: (response: any) => {
-            const expiresIn = response.expires_in;
-            const expiresAt = Date.now() + expiresIn * 1000;
-
-            const tokenData = {
-              access_token: response.access_token,
-              expires_at: expiresAt
-            };
-
-            localStorage.setItem('auth', JSON.stringify(tokenData));
-
-            this.router.navigate(['/build-viewer']);
-          },
-          error: (err) => {
-            console.error('Erro ao trocar o código por token:', err);
-          }
-        });
+        next: (r) => {
+          console.log('Token exchanged successfully:');
+          this.router.navigate(['/home']);
+        },
+        error: (error) => {
+          console.error('Error on Bungie Callback:', error);
+        }
+      });
     });
   }
 

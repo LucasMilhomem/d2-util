@@ -6,7 +6,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BuildViewerModule } from './components/build-viewer/build-viewer.module';
-import { HomeComponent } from './components/home/home.component';
+import { HomeModule } from './components/home/home.module';
 import { LoginCallbackComponent } from './components/login-callback/login-callback.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { BungieApiService } from './services/bungie-api.service';
@@ -15,7 +15,6 @@ import { BungieApiService } from './services/bungie-api.service';
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
     LoginCallbackComponent,
   ],
   imports: [
@@ -24,6 +23,7 @@ import { BungieApiService } from './services/bungie-api.service';
     AppRoutingModule,
     NgbModule,
     BuildViewerModule,
+    HomeModule,
   ],
   providers: [
     BungieApiService,

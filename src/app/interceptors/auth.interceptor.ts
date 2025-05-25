@@ -7,27 +7,27 @@ import {
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { AuthService } from '../services/auth.service';
+import { BungieApiService } from '../services/bungie-api.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
   constructor(
-    private authService: AuthService,
+    private bungieApiService: BungieApiService,
   ) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    if (this.authService.isLoggedIn()) {
+    if (this.bungieApiService.isLoggedIn()) {
       const cloned = request.clone({
         setHeaders: {
-          Authorization: `Bearer ${this.authService.getToken()}`,
+          Authorization: `Bearer ${this.bungieApiService.getToken()}`,
           'X-API-Key': environment.bungie_api_key,
         }
       });
       return next.handle(cloned);
     }
 
-    // Caso não tenha token válido, envia a requisição original mesmo assim
+    // if not logged in, just pass the request
     return next.handle(request);
   }
 }

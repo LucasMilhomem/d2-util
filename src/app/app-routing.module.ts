@@ -6,7 +6,8 @@ import { BuildViewerComponent } from './components/build-viewer/build-viewer.com
 import { AuthGuard } from './auth.guard';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '',  redirectTo: 'home', pathMatch: 'full' },
+  { path: 'home', component: HomeComponent },
   { path: 'build-viewer', component: BuildViewerComponent , canActivate: [AuthGuard]},
   { path: 'auth/callback', component: LoginCallbackComponent},
 ];

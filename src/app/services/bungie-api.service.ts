@@ -23,6 +23,28 @@ export class BungieApiService {
     window.location.href = `${environment.bungie_authorize_url}?client_id=${environment.bungie_client_id}&response_type=code&redirect_uri=${environment.bungie_redirect_uri}`;
   }
 
+  getToken(): string | null {
+    const raw = localStorage.getItem('auth');
+    if (!raw) return null;
+
+    const tokenData = JSON.parse(raw);
+    if (Date.now() > tokenData.expires_at) {
+      this.logout();
+      return null;
+    }
+
+    return tokenData.access_token;
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.getToken();
+  }
+
+  logout(): void {
+    localStorage.removeItem('auth');
+    // redirect maybe
+  }
+
   exchangeCodeForToken(code: string) {
     const headers = new HttpHeaders({
       'Content-Type': 'application/x-www-form-urlencoded'
@@ -33,7 +55,26 @@ export class BungieApiService {
       .set('code', code)
       .set('client_id', environment.bungie_client_id);
 
-    return this.http.post(environment.bungie_token_url, body.toString(), { headers });
+    return new Observable<any>(observer => {
+      this.http.post(environment.bungie_token_url, body.toString(), { headers }).subscribe({
+        next: (response: any) => {
+          const expiresIn = response.expires_in;
+          const expiresAt = Date.now() + expiresIn * 1000;
+
+          const tokenData = {
+            access_token: response.access_token,
+            expires_at: expiresAt
+          };
+
+          localStorage.setItem('auth', JSON.stringify(tokenData));
+          observer.next(true);
+        },
+        error: (err) => {
+          observer.error(err);
+          console.error('Erro exchanging Token:', err);
+        }
+      });
+    });
   }
 
   getMembership() {
