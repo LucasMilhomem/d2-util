@@ -10,10 +10,4 @@ export class HomeService {
     private http: HttpClient,
   ) { }
 
-  getProfileInventory(membershipType: string, membershipId: string) {
-    const components = [200, 205].join(',');
-
-    const url = `https://www.bungie.net/Platform/Destiny2/${membershipType}/Profile/${membershipId}/?components=${components}`;
-    return this.http.get(url);
-  }
 }

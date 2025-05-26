@@ -3,16 +3,28 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { Membership } from '../models/membership.model';
+import { Item } from '../models/item.model';
 
-export interface IMembership {
-  membershipType: string;
-  membershipId: string;
+interface InventoryData {
+  characters: {
+    [characterId: string]: {
+      inventory: Item[];
+      equipment: Item[];
+    };
+  };
+  profileInventory: Item[];
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class BungieApiService {
+
+  inventoryData: InventoryData = {
+    characters: {},
+    profileInventory: []
+  };
   
   constructor(
     private http: HttpClient,
@@ -80,14 +92,17 @@ export class BungieApiService {
   }
 
   getMembership() {
-    return new Observable<IMembership | null>(observer => {
+    return new Observable<Membership | null>(observer => {
       // check if there is a membership in localStorage
-      const membershipRaw = localStorage.getItem('membership');
+      const membershipRaw = localStorage.getItem('d2_profile_data');
       if (membershipRaw) {
         const membershipData = JSON.parse(membershipRaw);
         // check validity
         if (Date.now() < membershipData.expires_at) {
-          observer.next(membershipData);
+          observer.next(<Membership>{
+            membershipType: membershipData.membershipType,
+            membershipId: membershipData.membershipId,
+          });
           return;
         } else {
           localStorage.removeItem('membership');
@@ -117,16 +132,59 @@ export class BungieApiService {
             if (tokenRaw) {
               const tokenData = JSON.parse(tokenRaw);
               membershipData['expires_at'] = tokenData.expires_at;
-              localStorage.setItem('membership', JSON.stringify(membershipData));
+              localStorage.setItem('d2_profile_data', JSON.stringify(membershipData));
             }
             
             observer.next(membershipData);
           } else {
-            observer.error('Não foi possível obter o membership do jogador.');
+            observer.error('Error fetching membership data');
           }
         });
     });
   }
 
+  getProfileInventory() {
+    return new Observable<any>(observer => {
+      this.getMembership().subscribe({
+        next: (membership: Membership | null) => {
+          const components = [100, 102, 200, 201, 205].join(',');
+          const membershipType = membership!.membershipType;
+          const membershipId = membership!.membershipId;
+    
+          const url = `https://www.bungie.net/Platform/Destiny2/${membershipType}/Profile/${membershipId}/?components=${components}`;
+          this.http.get(url).subscribe({
+            next: (response: any) => {
+              const rawCharacterInventories = response.Response.characterInventories.data;
+              const rawProfileInventory = response.Response.profileInventory.data.items;
+
+              const organized: InventoryData = {
+                characters: {},
+                profileInventory: rawProfileInventory
+              };
+              
+              //character inventories
+              for (const [characterId, data] of Object.entries(rawCharacterInventories)) {
+                organized.characters[characterId] = {
+                  inventory: (data as any).items || [],
+                  equipment: rawCharacterInventories[characterId]?.items || [],
+                };
+              }
+
+              this.inventoryData = organized;
+
+              observer.next(this.inventoryData);
+            },
+            error: (err) => {
+              console.error('Error fetching profile inventory:', err);
+              observer.error(err);
+            }
+          });
+        },
+        error: (err) => {
+          console.error('Error fetching membership:', err);
+          observer.error(err);
+        }});
+    });
+  }
 
 }

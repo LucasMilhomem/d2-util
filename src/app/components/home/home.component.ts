@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { BungieApiService, IMembership } from 'src/app/services/bungie-api.service';
+import { BungieApiService } from 'src/app/services/bungie-api.service';
 import { HomeService } from './home.service';
+import { Membership } from 'src/app/models/membership.model';
 
 @Component({
   selector: 'app-home',
@@ -26,14 +27,12 @@ export class HomeComponent implements OnInit {
     this.logs.push('Logged In!');
 
     this.logs.push('Fetching Membership...');
-    this.bungieApiService.getMembership().subscribe((membership: IMembership | null) => {
+    this.bungieApiService.getMembership().subscribe((_membership: Membership | null) => {
       this.logs.push('Membership fetched successfully!');
       
       this.logs.push(`Fetching Profile...`);
-      this.homeService.getProfileInventory(membership!.membershipType, membership!.membershipId ).subscribe((builds: any) => {
+      this.bungieApiService.getProfileInventory().subscribe((builds: any) => {
           this.logs.push('Profile fetched successfully!');
-          
-          console.log('Builds:', builds);
        });
     });
 

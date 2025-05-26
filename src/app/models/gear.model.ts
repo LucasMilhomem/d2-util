@@ -1,1 +1,0 @@
-// Modelo de dados para uma peça de armadura
