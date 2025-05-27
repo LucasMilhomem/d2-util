@@ -1,0 +1,10 @@
+{
+  "/manifest": {
+    "target": "https://www.bungie.net",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/manifest": ""
+    }
+  }
+}

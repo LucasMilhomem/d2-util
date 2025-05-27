@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { BungieApiService } from 'src/app/services/bungie-api.service';
 import { HomeService } from './home.service';
 import { Membership } from 'src/app/models/membership.model';
+import { ManifestService } from 'src/app/services/manifest.service';
 
 @Component({
   selector: 'app-home',
@@ -17,6 +18,7 @@ export class HomeComponent implements OnInit {
   constructor(
     private bungieApiService : BungieApiService,
     private homeService: HomeService,
+    private manifestService: ManifestService,
   ){}
 
   ngOnInit(): void {
@@ -31,12 +33,15 @@ export class HomeComponent implements OnInit {
       this.logs.push('Membership fetched successfully!');
       
       this.logs.push(`Fetching Profile...`);
-      this.bungieApiService.getProfileInventory().subscribe((builds: any) => {
+      this.bungieApiService.getProfileInventory().subscribe(() => {
           this.logs.push('Profile fetched successfully!');
-       });
-    });
 
-    
+          this.logs.push(`Fetching Manifest...`);
+          this.manifestService.init().then(() => {
+            this.logs.push('Manifest initialized successfully!');
+          });
+      });
+   });
   }
 
 }
