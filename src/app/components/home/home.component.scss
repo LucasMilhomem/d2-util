@@ -1,0 +1,33 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #343a40 0%, #495057 100%);
+}
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.card {
+  margin-top: 2rem;
+  background-color: #23272b;
+  color: #f8f9fa;
+}
+
+.card-header {
+  background-color: #343a40;
+  color: #f8f9fa;
+}
+
+.card-body {
+  background-color: #23272b;
+}
+
+.list-group-item {
+  background-color: #23272b;
+  color: #f8f9fa;
+  border-color: #343a40;
+}

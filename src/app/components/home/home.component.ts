@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { BungieApiService } from 'src/app/services/bungie-api.service';
 import { HomeService } from './home.service';
 import { Membership } from 'src/app/models/membership.model';
@@ -9,7 +9,9 @@ import { ManifestService } from 'src/app/services/manifest.service';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, AfterViewChecked {
+
+  @ViewChild('logContainer') logContainer!: ElementRef;
 
   logs: string[] = [
     'App Starting...',
@@ -20,6 +22,16 @@ export class HomeComponent implements OnInit {
     private homeService: HomeService,
     private manifestService: ManifestService,
   ){}
+
+  ngAfterViewChecked(): void {
+    this.scrollToBottom();
+  }
+
+  private scrollToBottom(): void {
+    if (this.logContainer) {
+      this.logContainer.nativeElement.scrollTop = this.logContainer.nativeElement.scrollHeight;
+    }
+  }
 
   ngOnInit(): void {
     this.logs.push('Logging...');
