@@ -1,0 +1,68 @@
+<div class="container-fluid ">
+  <div class="mb-4">
+    <label for="characterSelect" class="form-label">Choose your Character:</label>
+    <select
+      id="characterSelect"
+      class="form-select"
+      [(ngModel)]="selectedCharacterId"
+      (ngModelChange)="onCharacterChange($event)"
+    >
+      <option *ngFor="let char of characterOptions" [value]="char.id">
+        {{ getClassLabel(char.classType!) }}
+      </option>
+    </select>
+  </div>
+  <div class="row">
+    <!-- Tabela dos itens equipados -->
+    <div class="col-12 col-md-4">
+      <div class="table-responsive">
+        <table class="table table-dark table-bordered table-hover align-middle text-center">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>M</th>
+              <th>R</th>
+              <th>R</th>
+              <th>D</th>
+              <th>I</th>
+              <th>S</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of equippedItems">
+              <td>
+                <img
+                  [src]="getItemIcon(item.definition!)"
+                  alt="Icon"
+                  width="28"
+                  height="28"
+                  class="me-1"
+                  [title]="item.definition!.displayProperties!.name"
+                />
+              </td>
+              <td *ngFor="let stat of getItemStatRow(item.definition!)">
+                {{ stat }}
+              </td>
+            </tr>
+            <tr class="table-info text-dark fw-bold">
+              <td>Total</td>
+              <td *ngFor="let total of getTotalStats()">
+                {{ total }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Espaço central -->
+    <div class="col-md-4 d-flex align-items-center justify-content-center text-white">
+      <p class="text-muted">[Prioridade de status]</p>
+    </div>
+
+    <!-- Espaço lateral para tabela filtrada -->
+    <div class="col-md-4 d-flex align-items-center justify-content-center text-white">
+      <p class="text-muted">[Sugestões de armadura]</p>
+    </div>
+  </div>
+</div>

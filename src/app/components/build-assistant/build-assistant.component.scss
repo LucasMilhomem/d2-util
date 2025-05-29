@@ -1,0 +1,50 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #343a40 0%, #495057 100%);
+  padding-bottom: 2rem;
+}
+
+label {
+  color: #f8f9fa;
+  font-weight: 500;
+}
+
+.table-responsive {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.table thead th {
+  background-color: #212529;
+  color: #ffc107;
+  font-weight: 600;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.table td,
+.table th {
+  padding: 0.3rem;
+  font-size: 0.75rem;
+  vertical-align: middle;
+  text-align: center;
+  color: #f8f9fa;
+}
+
+.table img {
+  border-radius: 4px;
+  box-shadow: 0 0 5px #000;
+  background-color: #1c1c1c;
+}
+
+.table-info td {
+  background-color: #ffc107 !important;
+  color: #212529 !important;
+}
+
+select.form-select {
+  background-color: #212529;
+  color: #f8f9fa;
+  border: 1px solid #495057;
+}

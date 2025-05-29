@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BuildViewerComponent } from './build-viewer.component';
+import { BuildAssistantComponent } from './build-assistant.component';
 
-describe('BuildViewerComponent', () => {
-  let component: BuildViewerComponent;
-  let fixture: ComponentFixture<BuildViewerComponent>;
+describe('BuildAssistantComponent', () => {
+  let component: BuildAssistantComponent;
+  let fixture: ComponentFixture<BuildAssistantComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BuildViewerComponent ]
+      declarations: [ BuildAssistantComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(BuildViewerComponent);
+    fixture = TestBed.createComponent(BuildAssistantComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

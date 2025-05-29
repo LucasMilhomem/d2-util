@@ -2,28 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { openDB, IDBPDatabase } from 'idb';
 import { firstValueFrom } from 'rxjs';
-
-interface DestinyItemDefinition {
-  displayProperties: {
-    name: string;
-    description: string;
-    icon: string;
-  };
-  itemTypeDisplayName: string;
-  inventory?: {
-    tierTypeName: string;
-    bucketTypeHash: number;
-  };
-  stats?: any;
-  [key: string]: any;
-}
+import { Item } from '../models/item.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ManifestService {
   private db!: IDBPDatabase;
-  private isInitialized = false;
 
   constructor(private http: HttpClient) {}
 
@@ -44,7 +29,7 @@ export class ManifestService {
       const itemUrl = `/manifest${itemPath}`;
   
       console.log('[Manifest] Downloading item definitions...');
-      const itemDefs = await firstValueFrom(this.http.get<Record<string, DestinyItemDefinition>>(itemUrl));
+      const itemDefs = await firstValueFrom(this.http.get<Record<string, Item>>(itemUrl));
   
       const tx = this.db.transaction('items', 'readwrite');
       const store = tx.objectStore('items');
@@ -58,12 +43,37 @@ export class ManifestService {
     }
   }
 
-  async getItemDef(itemHash: number): Promise<DestinyItemDefinition | null> {
+  async getItemDef(itemHash: number): Promise<Item | null> {
+    await this.init(); // Ensure DB is initialized
+
     if (!this.db) {
-      console.warn('[Manifest] DB não inicializado ainda');
+      console.warn('[Manifest] DB not initialized yet');
       return null;
     }
 
     return await this.db.get('items', itemHash.toString());
+  }
+
+  async getItemDefs(itemHashes: number[]): Promise<Item[]> {
+    await this.init(); // Ensure DB is initialized
+
+    if (!this.db) {
+      console.warn('[Manifest] DB not initialized yet');
+      return [];
+    }
+
+    const tx = this.db.transaction('items', 'readonly');
+    const store = tx.objectStore('items');
+
+    const results: Item[] = [];
+
+    for (const hash of itemHashes) {
+      const item = await store.get(hash.toString());
+      if (item) {
+        results.push(item);
+      }
+    }
+
+    return results;
   }
 }

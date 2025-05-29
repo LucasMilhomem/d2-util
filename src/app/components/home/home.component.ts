@@ -1,8 +1,6 @@
 import { AfterViewChecked, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { BungieApiService } from 'src/app/services/bungie-api.service';
 import { HomeService } from './home.service';
-import { Membership } from 'src/app/models/membership.model';
-import { ManifestService } from 'src/app/services/manifest.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -18,9 +16,8 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   ];
 
   constructor(
-    private bungieApiService : BungieApiService,
     private homeService: HomeService,
-    private manifestService: ManifestService,
+    private router: Router,
   ){}
 
   ngAfterViewChecked(): void {
@@ -34,26 +31,10 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit(): void {
-    this.logs.push('Logging...');
-    if(!this.bungieApiService.isLoggedIn()) 
-      this.bungieApiService.login();
-
-    this.logs.push('Logged In!');
-
-    this.logs.push('Fetching Membership...');
-    this.bungieApiService.getMembership().subscribe((_membership: Membership | null) => {
-      this.logs.push('Membership fetched successfully!');
-      
-      this.logs.push(`Fetching Profile...`);
-      this.bungieApiService.getProfileInventory().subscribe(() => {
-          this.logs.push('Profile fetched successfully!');
-
-          this.logs.push(`Fetching Manifest...`);
-          this.manifestService.init().then(() => {
-            this.logs.push('Manifest initialized successfully!');
-          });
-      });
-   });
+    this.homeService.runStartupFlow(this.logs).then(() => {
+      this.logs.push('Startup flow completed successfully!');
+      this.router.navigate(['/build-assistant']);
+    });
   }
 
 }

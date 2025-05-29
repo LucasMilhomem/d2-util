@@ -3,29 +3,13 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { InventoryData } from '../models/inventory-data.model';
 import { Membership } from '../models/membership.model';
-import { Item } from '../models/item.model';
-
-interface InventoryData {
-  characters: {
-    [characterId: string]: {
-      inventory: Item[];
-      equipment: Item[];
-    };
-  };
-  profileInventory: Item[];
-}
 
 @Injectable({
   providedIn: 'root'
 })
 export class BungieApiService {
-
-  inventoryData: InventoryData = {
-    characters: {},
-    profileInventory: []
-  };
-  
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -144,7 +128,7 @@ export class BungieApiService {
   }
 
   getProfileInventory() {
-    return new Observable<any>(observer => {
+    return new Observable<InventoryData>(observer => {
       this.getMembership().subscribe({
         next: (membership: Membership | null) => {
           const components = [100, 102, 200, 201, 205].join(',');
@@ -154,25 +138,26 @@ export class BungieApiService {
           const url = `https://www.bungie.net/Platform/Destiny2/${membershipType}/Profile/${membershipId}/?components=${components}`;
           this.http.get(url).subscribe({
             next: (response: any) => {
+              const rawCharacterEquipment = response.Response.characterEquipment.data;
               const rawCharacterInventories = response.Response.characterInventories.data;
               const rawProfileInventory = response.Response.profileInventory.data.items;
+              const rawCharacters = response.Response.characters.data;
 
               const organized: InventoryData = {
                 characters: {},
-                profileInventory: rawProfileInventory
+                profileInventory: rawProfileInventory,
               };
               
               //character inventories
               for (const [characterId, data] of Object.entries(rawCharacterInventories)) {
-                organized.characters[characterId] = {
+                organized.characters![characterId] = {
                   inventory: (data as any).items || [],
-                  equipment: rawCharacterInventories[characterId]?.items || [],
+                  equipment: rawCharacterEquipment[characterId]?.items || [],
+                  classType: rawCharacters[characterId]?.classType || 9 // Default to 9 if not found
                 };
               }
 
-              this.inventoryData = organized;
-
-              observer.next(this.inventoryData);
+              observer.next(organized);
             },
             error: (err) => {
               console.error('Error fetching profile inventory:', err);
